@@ -66,11 +66,15 @@ class MarketsminiAPI:
       print('-> Markets error: ' + str(e))
     return buff;
 
-  def getTickers(self):
-    res = []
+  def getTicker(self):
+    res = {'ccys' : [], 'change': 0, 'cap': 0}
     res_data = {}
     buy = 0.0
     sell = 0.0
+    vol = 0.0
+    price = 0.0
+    change = 0.0
+    cap = 0.0
     get_status_t = False
     res_data = self.client()
     if (self.socket_status):
@@ -85,13 +89,26 @@ class MarketsminiAPI:
                 for pair in self.pairs:
                   buy = 0.0
                   sell = 0.0
+                  vol = 0.0
+                  price = 0.0
                   if (pair in ccys):
                     ticker_target = ccys[pair]
                     if ('buy' in ticker_target):
                       buy = ticker_target['buy']
                     if ('sell' in ticker_target):
                       sell = ticker_target['sell']
-                  res.append({'pair': pair, 'price': (buy + sell) / 2})
+                    #if ('price' in ticker_target):
+                    #  price = ticker_target['price']
+                    price = (buy + sell) / 2
+                    if ('vol' in ticker_target):
+                      vol = ticker_target['vol']
+                  res['ccys'].append({'pair': pair, 'buy': buy, 'sell': sell, 'price': price, 'vol': vol})
+              if ('change' in ticker_root):
+                change = ticker_root['change']
+              res['change'] = change
+              #if ('cap' in ticker_root):
+              #  cap = ticker_root['cap']
+              res['cap'] =  cap
             get_status_t = True
       except:
         get_status_t = False
